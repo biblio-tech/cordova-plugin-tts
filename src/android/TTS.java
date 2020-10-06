@@ -221,7 +221,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     }
 
     private Voice getVoiceByName(String voiceName) {
-        Voice voice;
+        Voice voice = null;
 
         if (tts != null && ttsInitialized) {
              for (Voice tmpVoice : tts.getVoices()) {

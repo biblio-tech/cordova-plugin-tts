@@ -14,6 +14,7 @@ import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -221,6 +222,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         String voices = "";
+
         for (Voice tmpVoice : tts.getVoices()) {
             voices = voices + "," + tmpVoice.getName();
         }

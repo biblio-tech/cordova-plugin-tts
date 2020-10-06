@@ -163,7 +163,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String text;
         String locale;
         double rate;
-        Voice voice;
+        Voice voice = null;
 
         if (params.isNull("text")) {
             callbackContext.error(ERR_INVALID_OPTIONS);
@@ -173,16 +173,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         if (params.isNull("voice")) {
-           callbackContext.error(ERR_INVALID_OPTIONS);
-           return;
+           voice = getVoiceByName(null);
         } else {
             voice = getVoiceByName(params.getString("voice"));
-        }
-
-        if (params.isNull("locale")) {
-            locale = "en-US";
-        } else {
-            locale = params.getString("locale");
         }
 
         if (params.isNull("rate")) {
@@ -204,9 +197,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         HashMap<String, String> ttsParams = new HashMap<String, String>();
         ttsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, callbackContext.getCallbackId());
 
-        String[] localeArgs = locale.split("-");
-        tts.setLanguage(new Locale(localeArgs[0], localeArgs[1]));
-
         if (voice != null) {
             tts.setVoice(voice);
         }
@@ -218,6 +208,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
+
+        final PluginResult result = new PluginResult(PluginResult.Status.OK, voice.toString());
+        callbackContext.sendPluginResult(result);
     }
 
     private Voice getVoiceByName(String voiceName) {
@@ -228,6 +221,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                 if (tmpVoice.getName() == voiceName) {
                     voice = tmpVoice;
                     break;
+                } else if (voice == null && tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us")) {
+                    voice = tmpVoice;
                 }
             }
         }

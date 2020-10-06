@@ -220,21 +220,15 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
     }
 
-    private void getVoiceByName(String voiceName) {
-        if (tts == null) {
-            return;
-        }
-
-        if (!ttsInitialized) {
-            return;
-        }
-
+    private Voice getVoiceByName(String voiceName) {
         Voice voice;
 
-        for (Voice tmpVoice : tts.getVoices()) {
-            if (tmpVoice.getName() == voiceName) {
-                voice = tmpVoice;
-                break;
+        if (tts != null && ttsInitialized) {
+             for (Voice tmpVoice : tts.getVoices()) {
+                if (tmpVoice.getName() == voiceName) {
+                    voice = tmpVoice;
+                    break;
+                }
             }
         }
 

@@ -163,12 +163,20 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String text;
         String locale;
         double rate;
+        Voice voice;
 
         if (params.isNull("text")) {
             callbackContext.error(ERR_INVALID_OPTIONS);
             return;
         } else {
             text = params.getString("text");
+        }
+
+        if (params.isNull("voice")) {
+           callbackContext.error(ERR_INVALID_OPTIONS);
+           return;
+        } else {
+            voice = getVoiceByName(params.getString("voice"));
         }
 
         if (params.isNull("locale")) {
@@ -199,6 +207,10 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String[] localeArgs = locale.split("-");
         tts.setLanguage(new Locale(localeArgs[0], localeArgs[1]));
 
+        if (voice != null) {
+            tts.setVoice(voice);
+        }
+
         if (Build.VERSION.SDK_INT >= 27) {
             tts.setSpeechRate((float) rate * 0.7f);
         } else {
@@ -206,6 +218,27 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
+    }
+
+    private void getVoiceByName(String voiceName) {
+        if (tts == null) {
+            return;
+        }
+
+        if (!ttsInitialized) {
+            return;
+        }
+
+        Voice voice;
+
+        for (Voice tmpVoice : tts.getVoices()) {
+            if (tmpVoice.getName() == voiceName) {
+                voice = tmpVoice;
+                break;
+            }
+        }
+
+        return voice;
     }
 
     private void getVoices(JSONArray args, CallbackContext callbackContext)

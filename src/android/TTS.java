@@ -88,6 +88,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             checkLanguage(args, callbackContext);
         } else if (action.equals("openInstallTts")) {
             callInstallTtsActivity(args, callbackContext);
+        } else if (action.equals("getVoices")) {
+            getVoices(args, callbackContext);
         } else {
             return false;
         }
@@ -203,5 +205,22 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
+    }
+
+    private void getVoices(JSONArray args, CallbackContext callbackContext)
+            throws JSONException, NullPointerException {
+
+        String voices = "";
+        for (Voice tmpVoice : tts.supportedVoices()) {
+            Log.v("TTS", "Voice: "+tmpVoice.getName());
+            voices = voices + "," + tmpVoice.getName();
+        }
+
+        if (voices != "") {
+            voices = voices.substring(1);
+        }
+
+        final PluginResult result = new PluginResult(PluginResult.Status.OK, voices);
+        callbackContext.sendPluginResult(result);
     }
 }

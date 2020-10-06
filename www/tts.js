@@ -41,3 +41,9 @@ exports.openInstallTts = function() {
         cordova.exec(resolve, reject, 'TTS', 'openInstallTts', []);
     });
 };
+
+exports.getVoices = function() {
+    return new Promise(function (resolve, reject) {
+        cordova.exec(resolve, reject, 'TTS', 'getVoices', []);
+    });
+}

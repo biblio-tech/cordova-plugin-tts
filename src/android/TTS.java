@@ -208,9 +208,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
-
-        final PluginResult result = new PluginResult(PluginResult.Status.OK, voice.toString());
-        callbackContext.sendPluginResult(result);
     }
 
     private Voice getVoiceByName(String voiceName) {

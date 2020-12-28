@@ -29,6 +29,10 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /*
     Cordova Text-to-Speech Plugin
     https://github.com/vilic/cordova-plugin-tts
@@ -49,6 +53,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     boolean ttsInitialized = false;
     TextToSpeech tts = null;
     Context context = null;
+    CallbackContext rangeStartCallbackContext;
 
     @Override
     public void initialize(CordovaInterface cordova, final CordovaWebView webView) {
@@ -75,6 +80,26 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                     context.error(ERR_UNKNOWN);
                 }
             }
+
+            @Override
+            public void onRangeStart(String utteranceId,
+                                     final int start,
+                                     final int end,
+                                     int frame) {
+                Log.i("XXX", "onRangeStart() ... utteranceId: " + utteranceId + ", start: " + start
+                        + ", end: " + end + ", frame: " + frame);
+
+                if (!callbackId.equals("") && rangeStartCallbackContext) {
+                    JSONObject params = new JSONObject();
+                    params.put("utteranceId", utteranceId);
+                    params.put("start", start);
+                    params.put("end", end);
+                    params.put("frame", frame);
+                    PluginResult result = new PluginResult(PluginResult.Status.OK, params);
+                    result.setKeepCallback(true);
+                    rangeStartCallbackContext.sendPluginResult(result);
+                }
+            }
         });
     }
 
@@ -91,6 +116,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             callInstallTtsActivity(args, callbackContext);
         } else if (action.equals("getVoices")) {
             getVoices(args, callbackContext);
+        } else if (action.equals("setRangeStartCallback")) {
+            Log.i('setting range start callback', args);
+            setRangeStartCallback(args, callbackContext);
         } else {
             return false;
         }
@@ -252,5 +280,10 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
         final PluginResult result = new PluginResult(PluginResult.Status.OK, voices);
         callbackContext.sendPluginResult(result);
+    }
+
+    private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
+        rangeStartCallbackContext = callbackContext;
+        Log.i("rangeStartCallbackContext set", rangeStartCallbackContext);
     }
 }

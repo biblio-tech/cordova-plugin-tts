@@ -15,7 +15,6 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -87,8 +86,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                                      final int start,
                                      final int end,
                                      int frame) {
-                Log.i("XXX", "onRangeStart() ... utteranceId: " + utteranceId + ", start: " + start
-                        + ", end: " + end + ", frame: " + frame);
+                //Log.i("XXX", "onRangeStart() ... utteranceId: " + utteranceId + ", start: " + start
+                  //      + ", end: " + end + ", frame: " + frame);
 
                 if (rangeStartCallbackContext) {
                     JSONObject params = new JSONObject();
@@ -118,7 +117,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         } else if (action.equals("getVoices")) {
             getVoices(args, callbackContext);
         } else if (action.equals("setRangeStartCallback")) {
-            Log.i("setting range start callback");
+             //Log.i("setting range start callback");
             setRangeStartCallback(args, callbackContext);
         } else {
             return false;
@@ -285,6 +284,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
     private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
         rangeStartCallbackContext = callbackContext;
-        Log.i("rangeStartCallbackContext set");
+       // Log.i("rangeStartCallbackContext set");
     }
 }

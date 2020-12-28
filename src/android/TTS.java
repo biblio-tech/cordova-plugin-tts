@@ -86,15 +86,21 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                                      final int start,
                                      final int end,
                                      int frame) {
+                 webView.loadUrl("javascript:console.log('onRangeStart: "+utteranceId+" " + start + "')");
+
                 if (rangeStartCallbackContext != null) {
-                    JSONObject params = new JSONObject();
-                    params.put("utteranceId", utteranceId);
-                    params.put("start", start);
-                    params.put("end", end);
-                    params.put("frame", frame);
-                    PluginResult result = new PluginResult(PluginResult.Status.OK, params);
-                    result.setKeepCallback(true);
-                    rangeStartCallbackContext.sendPluginResult(result);
+                    try {
+                        JSONObject params = new JSONObject();
+                        params.put("utteranceId", utteranceId);
+                        params.put("start", start);
+                        params.put("end", end);
+                        params.put("frame", frame);
+                        PluginResult result = new PluginResult(PluginResult.Status.OK, params);
+                        result.setKeepCallback(true);
+                        rangeStartCallbackContext.sendPluginResult(result);
+                    } catch (JSONException e) {
+                        webView.loadUrl("javascript:console.log('error with json plugin: "+e.toString()+"')");
+                    }
                 }
             }
         });

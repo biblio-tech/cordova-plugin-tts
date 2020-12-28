@@ -82,10 +82,10 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             }
 
             @Override
-            public void onRangeStart(String utteranceId = null,
-                                     final int start = null,
-                                     final int end = null,
-                                     int frame = null) {
+            public void onRangeStart(String utteranceId,
+                                     final int start,
+                                     final int end,
+                                     int frame) {
                 //Log.i("XXX", "onRangeStart() ... utteranceId: " + utteranceId + ", start: " + start
                   //      + ", end: " + end + ", frame: " + frame);
 

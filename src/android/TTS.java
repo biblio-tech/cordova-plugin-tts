@@ -98,7 +98,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                         rangeStartCallbackContext.sendPluginResult(result);
                     }
                 } catch (JSONException e) {
-                    PluginResult result = new PluginResult(PluginResult.Status.JSON_EXCEPTION, e.toString());
+                    PluginResult result = new PluginResult(PluginResult.Status.OK, e.toString());
                     result.setKeepCallback(true);
                     rangeStartCallbackContext.sendPluginResult(result);
                 }

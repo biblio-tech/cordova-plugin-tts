@@ -89,22 +89,19 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                 //Log.i("XXX", "onRangeStart() ... utteranceId: " + utteranceId + ", start: " + start
                   //      + ", end: " + end + ", frame: " + frame);
 
-                if (rangeStartCallbackContext != null) {
-                    JSONObject params = new JSONObject();
-                    if (utteranceId != null) {
+                try {
+                    if (rangeStartCallbackContext != null && !utteranceId.equals("")) {
+                        JSONObject params = new JSONObject();
                         params.put("utteranceId", utteranceId);
-                    }
-                    if (start != null) {
                         params.put("start", start);
-                    }
-                    if(end != null) {
                         params.put("end", end);
-                    }
-                    if(frame != null) {
                         params.put("frame", frame);
+                        PluginResult result = new PluginResult(PluginResult.Status.OK, params);
+                        result.setKeepCallback(true);
+                        rangeStartCallbackContext.sendPluginResult(result);
                     }
-                    PluginResult result = new PluginResult(PluginResult.Status.OK, params);
-                    result.setKeepCallback(true);
+                } catch (JSONException e) {
+                    PluginResult result = new PluginResult(PluginResult.Status.JSON_EXCEPTION, e.toString());
                     rangeStartCallbackContext.sendPluginResult(result);
                 }
             }

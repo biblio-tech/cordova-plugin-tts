@@ -53,7 +53,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     boolean ttsInitialized = false;
     TextToSpeech tts = null;
     Context context = null;
-    CallbackContext rangeStartCallbackContext;
+    CallbackContext rangeStartCallbackContext = null;
 
     @Override
     public void initialize(CordovaInterface cordova, final CordovaWebView webView) {
@@ -89,7 +89,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                 //Log.i("XXX", "onRangeStart() ... utteranceId: " + utteranceId + ", start: " + start
                   //      + ", end: " + end + ", frame: " + frame);
 
-                if (rangeStartCallbackContext) {
+                if (rangeStartCallbackContext != null) {
                     JSONObject params = new JSONObject();
                     params.put("utteranceId", utteranceId);
                     params.put("start", start);

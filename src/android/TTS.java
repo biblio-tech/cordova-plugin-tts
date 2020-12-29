@@ -34,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 /*
     Cordova Text-to-Speech Plugin
     https://github.com/vilic/cordova-plugin-tts
@@ -50,6 +51,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     public static final String ERR_NOT_INITIALIZED = "ERR_NOT_INITIALIZED";
     public static final String ERR_ERROR_INITIALIZING = "ERR_ERROR_INITIALIZING";
     public static final String ERR_UNKNOWN = "ERR_UNKNOWN";
+    public static final String TAG = "TTS-PLUGIN-BIBLIU++++++++++++++++++++++++++++++++++++";
 
     boolean ttsInitialized = false;
     TextToSpeech tts = null;
@@ -64,10 +66,12 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             @Override
             public void onStart(String s) {
                 // do nothing
+                Log.i(TAG, "onStart " + s);
             }
 
             @Override
             public void onDone(String callbackId) {
+                Log.i(TAG, "onDone " + callbackId);
                 if (!callbackId.equals("")) {
                     CallbackContext context = new CallbackContext(callbackId, webView);
                     context.success();
@@ -76,6 +80,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
             @Override
             public void onError(String callbackId) {
+                Log.i(TAG, "onError " + callbackId);
                 if (!callbackId.equals("")) {
                     CallbackContext context = new CallbackContext(callbackId, webView);
                     context.error(ERR_UNKNOWN);
@@ -87,7 +92,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                                      final int start,
                                      final int end,
                                      int frame) {
-                 Log.i("tts","onRangeStart: "+utteranceId+" " + start);
+                 Log.i(TAG, "onRangeStart: "+utteranceId+" " + start);
 
                 if (rangeStartCallbackContext != null) {
                     try {
@@ -100,9 +105,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                         result.setKeepCallback(true);
                         rangeStartCallbackContext.sendPluginResult(result);
 
-            Log.i("tts","SENT RESULT TO FRONT-END " + params.toString());
+                    Log.i(TAG,"SENT RESULT TO FRONT-END " + params.toString());
                     } catch (JSONException e) {
-                        Log.i("tts","JSON exeception error here: "+e.toString());
+                        Log.i(TAG,"JSON exeception error here: "+e.toString());
                     }
                 }
             }
@@ -124,7 +129,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             getVoices(args, callbackContext);
         } else if (action.equals("setRangeStartCallback")) {
 
-            Log.i("tts","setRangeStartCallback");
+            Log.i(TAG,"setRangeStartCallback");
             setRangeStartCallback(args, callbackContext);
         } else {
             return false;
@@ -291,7 +296,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
     private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
 
-            Log.i("tts","setRangeStartCallback EXECUTED!!");
+            Log.i(TAG,"setRangeStartCallback EXECUTED!!");
         rangeStartCallbackContext = callbackContext;
     }
 }

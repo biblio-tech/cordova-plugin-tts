@@ -28,6 +28,7 @@ import android.content.Context;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,7 +87,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                                      final int start,
                                      final int end,
                                      int frame) {
-                 webView.loadUrl("javascript:console.log('onRangeStart: "+utteranceId+" " + start + "')");
+                 Log.i("javascript:console.log('onRangeStart: "+utteranceId+" " + start + "')");
 
                 if (rangeStartCallbackContext != null) {
                     try {
@@ -98,8 +99,10 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                         PluginResult result = new PluginResult(PluginResult.Status.OK, params);
                         result.setKeepCallback(true);
                         rangeStartCallbackContext.sendPluginResult(result);
+
+            Log.i("SENT RESULT TO FRONT-END " + params.toString());
                     } catch (JSONException e) {
-                        webView.loadUrl("javascript:console.log('error with json plugin: "+e.toString()+"')");
+                        Log.i("JSON exeception error here: "+e.toString());
                     }
                 }
             }
@@ -120,6 +123,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         } else if (action.equals("getVoices")) {
             getVoices(args, callbackContext);
         } else if (action.equals("setRangeStartCallback")) {
+
+            Log.i("setRangeStartCallback");
             setRangeStartCallback(args, callbackContext);
         } else {
             return false;
@@ -285,6 +290,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     }
 
     private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
+
+            Log.i("setRangeStartCallback EXECUTED!!");
         rangeStartCallbackContext = callbackContext;
     }
 }

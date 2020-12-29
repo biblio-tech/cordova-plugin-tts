@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.speech.tts.TextToSpeech.SynthesisCallback;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 
@@ -89,12 +90,13 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
             @Override
             public void onRangeStart(String utteranceId,
-                                     final int start,
-                                     final int end,
+                                     int start,
+                                     int end,
                                      int frame) {
-                 Log.i(TAG, "onRangeStart: "+utteranceId+" " + start);
+                 Log.i(TAG, "onRangeStart: "+utteranceId);
 
                 if (rangeStartCallbackContext != null) {
+                    Log.i(TAG, "create rangestart json");
                     try {
                         JSONObject params = new JSONObject();
                         params.put("utteranceId", utteranceId);
@@ -105,7 +107,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                         result.setKeepCallback(true);
                         rangeStartCallbackContext.sendPluginResult(result);
 
-                    Log.i(TAG,"SENT RESULT TO FRONT-END " + params.toString());
+                        Log.i(TAG,"SENT RESULT TO FRONT-END " + params.toString());
                     } catch (JSONException e) {
                         Log.i(TAG,"JSON exeception error here: "+e.toString());
                     }

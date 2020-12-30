@@ -95,7 +95,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                  Log.i(TAG, "onRangeStart: "+utteranceId);
 
                 if (rangeStartCallbackContext != null) {
-                    Log.i(TAG, "create rangestart json");
                     try {
                         JSONObject params = new JSONObject();
                         params.put("utteranceId", utteranceId);
@@ -106,9 +105,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                         result.setKeepCallback(true);
                         rangeStartCallbackContext.sendPluginResult(result);
 
-                        Log.i(TAG,"SENT RESULT TO FRONT-END " + params.toString());
+                        Log.i(TAG,"rangeStartCallback data sent to front-end: " + params.toString());
                     } catch (JSONException e) {
-                        Log.i(TAG,"JSON exeception error here: "+e.toString());
+                        Log.i(TAG,"JSON exeception error: "+e.toString());
                     }
                 }
             }
@@ -129,8 +128,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         } else if (action.equals("getVoices")) {
             getVoices(args, callbackContext);
         } else if (action.equals("setRangeStartCallback")) {
-
-            Log.i(TAG,"setRangeStartCallback");
             setRangeStartCallback(args, callbackContext);
         } else {
             return false;
@@ -286,9 +283,10 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         for (Voice tmpVoice : tts.getVoices()) {
             // for now filter these voices out, otherwise, highlighting will not work on them
             if (!tmpVoice.toString().contains("legacySetLanguageVoice") && 
-            !tmpVoice.toString().contains("notInstalled")) {
+                !tmpVoice.toString().contains("notInstalled") && !
+                tmpVoice.getName().contains("network")
+            ) {
                 voices = voices + "," + tmpVoice.getName();
-                Log.i(TAG, "voice features " + tmpVoice.getName() + " ++++++++++ " + tmpVoice.getFeatures().toString());
             }
         }
 
@@ -301,7 +299,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     }
 
     private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
-        Log.i(TAG,"setRangeStartCallback EXECUTED!!");
+        Log.i(TAG,"setRangeStartCallback");
         rangeStartCallbackContext = callbackContext;
     }
 }

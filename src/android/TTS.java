@@ -256,7 +256,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                 if (tmpVoice.getName().contains(voiceName)) {
                     voice = tmpVoice;
                     break;
-                } else if (voice == null && tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us")) {
+                } else if (voice == null && tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us") && isVoiceValid(tmpVoice)) {
                     voice = tmpVoice;
                 }
             }
@@ -282,10 +282,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
         for (Voice tmpVoice : tts.getVoices()) {
             // for now filter these voices out, otherwise, highlighting will not work on them
-            if (!tmpVoice.toString().contains("legacySetLanguageVoice") && 
-                !tmpVoice.toString().contains("notInstalled") && !
-                tmpVoice.getName().contains("network")
-            ) {
+            if (isVoiceValid(tmpVoice)) {
                 voices = voices + "," + tmpVoice.getName();
             }
         }
@@ -296,6 +293,10 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
         final PluginResult result = new PluginResult(PluginResult.Status.OK, voices);
         callbackContext.sendPluginResult(result);
+    }
+
+    private void isVoiceValid(Voice voice) {
+        return !voice.toString().contains("legacySetLanguageVoice") && !voice.toString().contains("notInstalled") && !voice.getName().contains("network");
     }
 
     private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {

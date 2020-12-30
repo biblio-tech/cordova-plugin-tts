@@ -284,8 +284,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String voices = "";
 
         for (Voice tmpVoice : tts.getVoices()) {
-            
-            if (!tmpVoice.toString().contains("legacySetLanguageVoice")) {
+            // for now filter these voices out, otherwise, highlighting will not work on them
+            if (!tmpVoice.toString().contains("legacySetLanguageVoice") && 
+            !tmpVoice.toString().contains("notInstalled")) {
                 voices = voices + "," + tmpVoice.getName();
                 Log.i(TAG, "voice features " + tmpVoice.getName() + " ++++++++++ " + tmpVoice.getFeatures().toString());
             }

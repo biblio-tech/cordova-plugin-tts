@@ -295,7 +295,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         callbackContext.sendPluginResult(result);
     }
 
-    private void isVoiceValid(Voice voice) {
+    private Boolean isVoiceValid(Voice voice) {
         return !voice.toString().contains("legacySetLanguageVoice") && !voice.toString().contains("notInstalled") && !voice.getName().contains("network");
     }
 

@@ -284,7 +284,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String voices = "";
 
         for (Voice tmpVoice : tts.getVoices()) {
-            if (!tmpVoice.contains("legacySetLanguageVoice")) {
+            if (!tmpVoice.toString().contains("legacySetLanguageVoice")) {
                 voices = voices + "," + tmpVoice.getName();
                 Log.i(TAG, "voice features " + tmpVoice.getName() + " ++++++++++ " + tmpVoice.getFeatures().toString());
             }

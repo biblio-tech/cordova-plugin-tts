@@ -285,6 +285,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
         for (Voice tmpVoice : tts.getVoices()) {
             voices = voices + "," + tmpVoice.getName();
+            Log.i(TAG, "voice features " + tmpVoice.getName() + " ++++++++++ " + tmpVoice.getFeatures().toString());
         }
 
         if (voices != "") {
@@ -296,8 +297,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     }
 
     private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
-
-            Log.i(TAG,"setRangeStartCallback EXECUTED!!");
+        Log.i(TAG,"setRangeStartCallback EXECUTED!!");
         rangeStartCallbackContext = callbackContext;
     }
 }

@@ -211,7 +211,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         if (params.isNull("voice")) {
-           voice = getVoiceByName(null);
+           voice = getFirstValidVoice();
         } else {
             voice = getVoiceByName(params.getString("voice"));
         }
@@ -232,6 +232,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             return;
         }
 
+        Log.i(TAG, "voice name to play is " + voice.toString());
+
         HashMap<String, String> ttsParams = new HashMap<String, String>();
         ttsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, callbackContext.getCallbackId());
 
@@ -250,19 +252,34 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
     private Voice getVoiceByName(String voiceName) {
         Voice voice = null;
-
-        if (tts != null && ttsInitialized) {
+        
+        if (tts != null && ttsInitialized && voiceName != null) {
              for (Voice tmpVoice : tts.getVoices()) {
-                if (tmpVoice.getName().contains(voiceName)) {
+                if (tmpVoice.getName().contains(voiceName) && isVoiceValid(tmpVoice)) {
                     voice = tmpVoice;
                     break;
-                } else if (voice == null && tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us") && isVoiceValid(tmpVoice)) {
-                    voice = tmpVoice;
-                }
+                } 
             }
         }
 
+        if (voice == null) {
+            return getFirstValidVoice();
+        }
+
         return voice;
+    }
+
+    private Voice getFirstValidVoice() {
+        Voice voice = null;
+        if (tts != null && ttsInitialized) {
+            for (Voice tmpVoice : tts.getVoices()) {
+               if (tmpVoice.getName().contains("en-us") && isVoiceValid(tmpVoice)) {
+                   voice = tmpVoice;
+                   break;
+               } 
+           }
+       }
+       return voice;
     }
 
     private void getVoices(JSONArray args, CallbackContext callbackContext)

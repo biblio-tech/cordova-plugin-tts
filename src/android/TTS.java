@@ -51,7 +51,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     public static final String ERR_NOT_INITIALIZED = "ERR_NOT_INITIALIZED";
     public static final String ERR_ERROR_INITIALIZING = "ERR_ERROR_INITIALIZING";
     public static final String ERR_UNKNOWN = "ERR_UNKNOWN";
-    public static final String TAG = "TTS-PLUGIN-BIBLIU++++++++++++++++++++++++++++++++++++";
+    public static final String TAG = "TTS-PLUGIN-BIBLIU";
 
     boolean ttsInitialized = false;
     TextToSpeech tts = null;
@@ -65,7 +65,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String s) {
-                // do nothing
                 Log.i(TAG, "onStart " + s);
             }
 
@@ -104,7 +103,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
                         PluginResult result = new PluginResult(PluginResult.Status.OK, params);
                         result.setKeepCallback(true);
                         rangeStartCallbackContext.sendPluginResult(result);
-
                         Log.i(TAG,"rangeStartCallback data sent to front-end: " + params.toString());
                     } catch (JSONException e) {
                         Log.i(TAG,"JSON exeception error: "+e.toString());
@@ -298,7 +296,6 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String voices = "";
 
         for (Voice tmpVoice : tts.getVoices()) {
-            // for now filter these voices out, otherwise, highlighting will not work on them
             if (isVoiceValid(tmpVoice)) {
                 voices = voices + "," + tmpVoice.getName();
             }
@@ -313,6 +310,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     }
 
     private Boolean isVoiceValid(Voice voice) {
+          // for now filter these voices out, otherwise, highlighting will not work on them
         return !voice.toString().contains("legacySetLanguageVoice") && !voice.toString().contains("notInstalled") && !voice.getName().contains("network");
     }
 

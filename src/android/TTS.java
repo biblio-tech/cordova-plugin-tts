@@ -28,6 +28,12 @@ import android.content.Context;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /*
     Cordova Text-to-Speech Plugin
@@ -45,10 +51,12 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     public static final String ERR_NOT_INITIALIZED = "ERR_NOT_INITIALIZED";
     public static final String ERR_ERROR_INITIALIZING = "ERR_ERROR_INITIALIZING";
     public static final String ERR_UNKNOWN = "ERR_UNKNOWN";
+    public static final String TAG = "TTS-PLUGIN-BIBLIU";
 
     boolean ttsInitialized = false;
     TextToSpeech tts = null;
     Context context = null;
+    CallbackContext rangeStartCallbackContext = null;
 
     @Override
     public void initialize(CordovaInterface cordova, final CordovaWebView webView) {
@@ -57,11 +65,12 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String s) {
-                // do nothing
+                Log.i(TAG, "onStart " + s);
             }
 
             @Override
             public void onDone(String callbackId) {
+                Log.i(TAG, "onDone " + callbackId);
                 if (!callbackId.equals("")) {
                     CallbackContext context = new CallbackContext(callbackId, webView);
                     context.success();
@@ -70,9 +79,34 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
             @Override
             public void onError(String callbackId) {
+                Log.i(TAG, "onError " + callbackId);
                 if (!callbackId.equals("")) {
                     CallbackContext context = new CallbackContext(callbackId, webView);
                     context.error(ERR_UNKNOWN);
+                }
+            }
+
+            @Override
+            public void onRangeStart(String utteranceId,
+                                     int start,
+                                     int end,
+                                     int frame) {
+                 Log.i(TAG, "onRangeStart: "+utteranceId);
+
+                if (rangeStartCallbackContext != null) {
+                    try {
+                        JSONObject params = new JSONObject();
+                        params.put("utteranceId", utteranceId);
+                        params.put("start", start);
+                        params.put("end", end);
+                        params.put("frame", frame);
+                        PluginResult result = new PluginResult(PluginResult.Status.OK, params);
+                        result.setKeepCallback(true);
+                        rangeStartCallbackContext.sendPluginResult(result);
+                        Log.i(TAG,"rangeStartCallback data sent to front-end: " + params.toString());
+                    } catch (JSONException e) {
+                        Log.i(TAG,"JSON exeception error: "+e.toString());
+                    }
                 }
             }
         });
@@ -91,6 +125,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             callInstallTtsActivity(args, callbackContext);
         } else if (action.equals("getVoices")) {
             getVoices(args, callbackContext);
+        } else if (action.equals("setRangeStartCallback")) {
+            setRangeStartCallback(args, callbackContext);
         } else {
             return false;
         }
@@ -173,7 +209,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         }
 
         if (params.isNull("voice")) {
-           voice = getVoiceByName(null);
+           voice = getFirstValidVoice();
         } else {
             voice = getVoiceByName(params.getString("voice"));
         }
@@ -194,6 +230,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             return;
         }
 
+        Log.i(TAG, "voice name to play is " + voice.toString());
+
         HashMap<String, String> ttsParams = new HashMap<String, String>();
         ttsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, callbackContext.getCallbackId());
 
@@ -212,19 +250,34 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
     private Voice getVoiceByName(String voiceName) {
         Voice voice = null;
-
-        if (tts != null && ttsInitialized) {
+        
+        if (tts != null && ttsInitialized && voiceName != null) {
              for (Voice tmpVoice : tts.getVoices()) {
-                if (tmpVoice.getName().contains(voiceName)) {
+                if (tmpVoice.getName().contains(voiceName) && isVoiceValid(tmpVoice)) {
                     voice = tmpVoice;
                     break;
-                } else if (voice == null && tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us")) {
-                    voice = tmpVoice;
-                }
+                } 
             }
         }
 
+        if (voice == null) {
+            return getFirstValidVoice();
+        }
+
         return voice;
+    }
+
+    private Voice getFirstValidVoice() {
+        Voice voice = null;
+        if (tts != null && ttsInitialized) {
+            for (Voice tmpVoice : tts.getVoices()) {
+               if (tmpVoice.getName().contains("en-us") && isVoiceValid(tmpVoice)) {
+                   voice = tmpVoice;
+                   break;
+               } 
+           }
+       }
+       return voice;
     }
 
     private void getVoices(JSONArray args, CallbackContext callbackContext)
@@ -243,7 +296,9 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         String voices = "";
 
         for (Voice tmpVoice : tts.getVoices()) {
-            voices = voices + "," + tmpVoice.getName();
+            if (isVoiceValid(tmpVoice)) {
+                voices = voices + "," + tmpVoice.getName();
+            }
         }
 
         if (voices != "") {
@@ -252,5 +307,15 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
         final PluginResult result = new PluginResult(PluginResult.Status.OK, voices);
         callbackContext.sendPluginResult(result);
+    }
+
+    private Boolean isVoiceValid(Voice voice) {
+          // for now filter these voices out, otherwise, highlighting will not work on them
+        return !voice.toString().contains("legacySetLanguageVoice") && !voice.toString().contains("notInstalled") && !voice.getName().contains("network");
+    }
+
+    private void setRangeStartCallback(JSONArray args, CallbackContext callbackContext) {
+        Log.i(TAG,"setRangeStartCallback");
+        rangeStartCallbackContext = callbackContext;
     }
 }

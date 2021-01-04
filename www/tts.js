@@ -47,3 +47,7 @@ exports.getVoices = function() {
         cordova.exec(resolve, reject, 'TTS', 'getVoices', []);
     });
 }
+
+exports.setRangeStartCallback = function(cb) {
+    cordova.exec(cb, (err) => console.log(err), 'TTS', 'setRangeStartCallback', []);
+}
